@@ -1,15 +1,21 @@
+using NetCord.Rest;
+
 namespace Markwardt;
 
-public interface IBotClient : IDisposable
+public interface IDiscordClient : IDisposable
 {
     ValueTask Start(string token);
+    ValueTask<RestMessage> Send(ulong channel, MessageProperties properties);
 }
 
-public class BotClient : BaseDisposable, IBotClient
+public class DiscordClient : BaseDisposable, IDiscordClient
 {
     private GatewayClient? client;
 
     public required IMessageHandler Handler { get; init; }
+
+    public async ValueTask<RestMessage> Send(ulong channel, MessageProperties properties)
+        => await client!.Rest.SendMessageAsync(channel, properties);
 
     public async ValueTask Start(string token)
     {
